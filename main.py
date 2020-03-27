@@ -16,7 +16,8 @@ async def main(file_name: str) -> int:
 
 if __name__ == "__main__":
     import argparse
-    import exitstatus
+    import sys
+    from exitstatus import ExitStatus
 
     parser = argparse.ArgumentParser(description="Start a file server.")
 
@@ -32,7 +33,11 @@ if __name__ == "__main__":
 
     try:
         count = loop.run_until_complete(main(args.file))
+    except FileNotFoundError as e:
+        print(f"main.py: error: file '{args.file}': not found")
+        sys.exit(ExitStatus.failure)
     finally:
         loop.close()
 
     print(count)
+    sys.exit(ExitStatus.success)
