@@ -1,12 +1,18 @@
 import asyncio
 import aiofiles
 
-from fileserver.infra.file import File
+from fileserver.infra.file import Repository
 
 
-async def main(file_name: str) -> None:
+async def main(file_name: str) -> int:
     async with aiofiles.open(file_name, "rb") as async_file:
-        file = File(async_file)
+        repository = Repository(async_file)
+
+        count = 0
+        async for data in repository.data():
+            count = count + len(data)
+
+        return count
 
 if __name__ == "__main__":
     import argparse
@@ -22,4 +28,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    asyncio.run(main(args.file))
+    loop = asyncio.get_event_loop()
+
+    try:
+        count = loop.run_until_complete(main(args.file))
+    finally:
+        loop.close()
+
+    print(count)
