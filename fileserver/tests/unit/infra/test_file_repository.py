@@ -110,3 +110,43 @@ class TestFileRepository(aiounittest.AsyncTestCase):
             items.append(item)
 
         self.assertTrue(items == [bytearray(b"\x01\x02\x03\x04\x05")])
+
+    async def test_queue_item_size_lt_file_size_lt_read_buffer_size(self):
+        repository = Repository(ByteArrayFile(bytearray(b"\x01\x02\x03\x04\x05")),
+                                read_buffer_size=4, queue_item_size=1)
+        result = [bytearray([i+1]) for i in range(5)]
+        items = []
+        async for item in repository.data():
+            items.append(item)
+
+        self.assertTrue(items == result)
+
+    async def test_queue_item_size_lt_file_size_eq_read_buffer_size(self):
+        repository = Repository(ByteArrayFile(bytearray(b"\x01\x02\x03\x04\x05")),
+                                read_buffer_size=5, queue_item_size=1)
+        result = [bytearray([i+1]) for i in range(5)]
+        items = []
+        async for item in repository.data():
+            items.append(item)
+
+        self.assertTrue(items == result)
+
+    async def test_queue_item_size_lt_read_buffer_size_lt_file_size(self):
+        repository = Repository(ByteArrayFile(bytearray(b"\x01\x02\x03\x04\x05")),
+                                read_buffer_size=4, queue_item_size=1)
+        result = [bytearray([i+1]) for i in range(5)]
+        items = []
+        async for item in repository.data():
+            items.append(item)
+
+        self.assertTrue(items == result)
+
+    async def test_queue_item_size_eq_read_buffer_size_lt_file_size(self):
+        repository = Repository(ByteArrayFile(bytearray(b"\x01\x02\x03\x04\x05")),
+                                read_buffer_size=1, queue_item_size=1)
+        result = [bytearray([i+1]) for i in range(5)]
+        items = []
+        async for item in repository.data():
+            items.append(item)
+
+        self.assertTrue(items == result)
