@@ -34,7 +34,7 @@ if __name__ == "__main__":
     try:
         count = loop.run_until_complete(main(args.file))
     except FileNotFoundError as e:
-        print(f"main.py: error: file '{args.file}': not found")
+        print(f'main.py: error: file "{args.file}": not found')
         sys.exit(ExitStatus.failure)
     finally:
         loop.close()

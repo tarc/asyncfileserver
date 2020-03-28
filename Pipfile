@@ -4,8 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-nose2 = "*"
 autopep8 = "*"
+aiounittest = "*"
 
 [packages]
 exitstatus = "*"
