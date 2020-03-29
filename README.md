@@ -1,4 +1,4 @@
-![Build](https://github.com/tarc/file_server/workflows/Simple%20File%20Server/badge.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/tarc/asyncfileserver/badge.svg?branch=feature/AddMediatorQueue)](https://coveralls.io/github/tarc/asyncfileserver?branch=feature/AddMediatorQueue)
+![Test](https://github.com/tarc/asyncfileserver/workflows/Test/badge.svg?branch=feature%2FAddMediatorQueue) [![codecov](https://codecov.io/gh/tarc/asyncfileserver/branch/feature/AddMediatorQueue/graph/badge.svg)](https://codecov.io/gh/tarc/asyncfileserver)
 
 # Simple File Server Featuring Python Async Constructs
 
