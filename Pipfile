@@ -9,6 +9,7 @@ aiounittest = "*"
 pipenv-setup = "*"
 twine = "*"
 secretstorage = ">=3.1.0"
+coveralls = "*"
 
 [packages]
 exitstatus = "*"
