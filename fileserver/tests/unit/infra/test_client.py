@@ -19,9 +19,15 @@ class FixedElementsQueue(object):
         self._index = 0
 
     async def get(self):
+        if self._index >= len(self._elements):
+            return None
+
         element = self._elements[self._index]
-        self._index = self._index + 1
+
         return element
+
+    def task_done(self):
+        self._index = self._index + 1
 
 
 class TestFile(aiounittest.AsyncTestCase):
@@ -39,4 +45,4 @@ class TestFile(aiounittest.AsyncTestCase):
         client = Client(queue, output)
 
         await client.write()
-        self.assertEqual(output.buffer[0], single_element)
+        self.assertEqual(output_elements[0], single_element)

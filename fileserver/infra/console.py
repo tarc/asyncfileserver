@@ -12,5 +12,8 @@ class Client(object):
         self._output = output
 
     async def write(self):
-        pass
-        #await self._output.print(data)
+        item = await self._queue.get()
+        self._queue.task_done()
+        while(item):
+            await self._output.print(item)
+            item = await self._queue.get()
