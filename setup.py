@@ -73,7 +73,7 @@ setup(
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
     url="https://github.com/tarc/asyncfileserver",  # Optional
-    download_url="https://github.com/tarc/asyncfileserver/archive/v0.0.0.tar.gz",
+    download_url="https://github.com/tarc/asyncfileserver/archive/v0.0.1.tar.gz",
     # This should be your name or the name of the organization which owns the
     # project.
     author="Tarcísio Genaro Rodrigues",  # Optional
