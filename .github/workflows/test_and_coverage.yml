@@ -1,12 +1,14 @@
-name: Test and Coverage
+name: Test
 
 on:
   push:
     branches: [ master, develop, feature/* ]
+  pull_request:
+    branches: [ master, develop ]
 
 jobs:
   build:
-    name: Test and Coverage
+    name: Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,13 +24,13 @@ jobs:
       - name: Install dependencies
         run: pipenv install --dev
       - name: Run tests and coverage
-        run: pipenv run coverage run --source=asyncfileserver setup.py test
-      - name: Publish coverage in Coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: pipenv run coveralls
-      - name: Publish coverage in Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: pipenv run codecov
-
+        run: pipenv run coverage run --source asyncfileserver setup.py test
+      - name: Create XML report of coverage results
+        run: pipenv run coverage xml
+      - name: Upload coverage to Codecov  
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          name: asyncfileserver
+          fail_ci_if_error: true
