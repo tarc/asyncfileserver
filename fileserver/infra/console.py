@@ -1,11 +1,9 @@
 import asyncio
 import sys
 
-from fileserver.infra.async_console_output import AsyncConsoleOutput as Out
-
 
 class Client(object):
-    def __init__(self, queue, output=Out()):
+    def __init__(self, queue, output):
         self._queue = queue
         self._output = output
 

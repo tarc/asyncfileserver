@@ -36,8 +36,8 @@ class TestFile(aiounittest.AsyncTestCase):
         return asyncio.get_event_loop()
 
     async def test_simple_output(self):
-        single_element = object()
-        queue = FixedElementsQueue([single_element])
+        singular_element = object()
+        queue = FixedElementsQueue([singular_element])
 
         output_elements = []
         output = BufferOutput(output_elements)
@@ -45,4 +45,4 @@ class TestFile(aiounittest.AsyncTestCase):
         client = Client(queue, output)
 
         await client.write()
-        self.assertEqual(output_elements[0], single_element)
+        self.assertEqual(output_elements[0], singular_element)
