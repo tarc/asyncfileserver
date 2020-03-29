@@ -1,4 +1,4 @@
-name: Simple File Server
+name: Test
 
 on:
   push:

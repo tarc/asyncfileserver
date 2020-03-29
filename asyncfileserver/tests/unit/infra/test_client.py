@@ -2,7 +2,7 @@ import asyncio
 import aiounittest
 import aioconsole
 
-from fileserver.infra.console import Client
+from asyncfileserver.infra.console import Client
 
 
 class BufferOutput(object):

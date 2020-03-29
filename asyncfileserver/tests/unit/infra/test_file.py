@@ -1,7 +1,7 @@
 import asyncio
 import aiounittest
 
-from fileserver.infra.file import File
+from asyncfileserver.infra.file import File
 
 
 class ByteArrayFile(object):
