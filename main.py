@@ -3,10 +3,10 @@ import aiofiles
 from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
-from fileserver.infra.file import File
-from fileserver.infra.console import Client
-from fileserver.infra.async_console_output import AsyncConsoleOutput
-from fileserver.model.simple_queue import SimpleQueue
+from asyncfileserver.infra.file import File
+from asyncfileserver.infra.console import Client
+from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
+from asyncfileserver.model.simple_queue import SimpleQueue
 
 
 async def main(file_name: str) -> int:
