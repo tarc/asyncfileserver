@@ -1,43 +1,55 @@
 import asyncio
 import aiofiles
+from aioconsole.stream import create_standard_streams
+from exitstatus import ExitStatus
 
-from fileserver.infra.file import Repository
+from asyncfileserver.infra.file import File
+from asyncfileserver.infra.console import Client
+from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
+from asyncfileserver.model.simple_queue import SimpleQueue
 
 
 async def main(file_name: str) -> int:
     async with aiofiles.open(file_name, "rb") as async_file:
-        repository = Repository(async_file)
+        queue = SimpleQueue(asyncio.Queue())
+        file = File(file=async_file, queue=queue)
 
-        count = 0
-        async for data in repository.data():
-            count = count + len(data)
+        streams = await create_standard_streams(sys.stdin.buffer,
+                                                sys.stdout.buffer,
+                                                sys.stderr.buffer)
+        _, writer, _ = streams
+        output = AsyncConsoleOutput(writer)
+        client = Client(queue, output)
 
-        return count
+        read_file = asyncio.create_task(file.read())
+        write_console = asyncio.create_task(client.write())
+
+        await asyncio.gather(read_file, write_console)
+
+        return ExitStatus.success
 
 if __name__ == "__main__":
     import argparse
     import sys
-    from exitstatus import ExitStatus
 
     parser = argparse.ArgumentParser(description="Start a file server.")
 
     parser.add_argument("-f", "--file", type=str, required=True,
                         help="file to be served")
 
-    parser.add_argument("-c", "--ncon", type=int, default=10,
-                        help="number of consumers")
-
     args = parser.parse_args()
 
     loop = asyncio.get_event_loop()
 
     try:
-        count = loop.run_until_complete(main(args.file))
+        status = loop.run_until_complete(main(args.file))
     except FileNotFoundError as e:
-        print(f'main.py: error: file "{args.file}": not found')
+        print(f'main.py: error: file "{args.file}": not found', file=sys.stderr)
+        sys.exit(ExitStatus.failure)
+    except TypeError as e:
+        print(f'main.py: error: type error: {e}', file=sys.stderr)
         sys.exit(ExitStatus.failure)
     finally:
         loop.close()
 
-    print(count)
-    sys.exit(ExitStatus.success)
+    sys.exit(status)

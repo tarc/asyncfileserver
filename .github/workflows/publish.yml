@@ -1,0 +1,29 @@
+name: Publish Python Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ">= 3.5"
+      - uses: dschep/install-pipenv-action@v1
+      - name: Install dependencies
+        run: pipenv install --dev
+
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          pipenv run python setup.py sdist
+          pipenv run twine upload dist/*

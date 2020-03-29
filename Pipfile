@@ -6,10 +6,15 @@ verify_ssl = true
 [dev-packages]
 autopep8 = "*"
 aiounittest = "*"
+pipenv-setup = "*"
+twine = "*"
+secretstorage = ">=3.1.0"
 
 [packages]
 exitstatus = "*"
 aiofiles = "*"
+aioconsole = "*"
+env = "*"
 
 [requires]
 python_version = "3.8"
