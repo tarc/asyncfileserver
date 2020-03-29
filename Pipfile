@@ -10,6 +10,8 @@ aiounittest = "*"
 [packages]
 exitstatus = "*"
 aiofiles = "*"
+aioconsole = "*"
+env = "*"
 
 [requires]
 python_version = "3.8"
