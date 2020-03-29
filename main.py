@@ -1,23 +1,27 @@
 import asyncio
 import aiofiles
+from exitstatus import ExitStatus
 
-from fileserver.infra.file import Repository
+from fileserver.infra.file import File
+from fileserver.infra.console import Client
 
 
 async def main(file_name: str) -> int:
     async with aiofiles.open(file_name, "rb") as async_file:
-        repository = Repository(async_file)
+        queue = asyncio.Queue()
+        file = File(file=async_file, queue=queue)
+        client = Client(queue)
 
-        count = 0
-        async for data in repository.data():
-            count = count + len(data)
+        read_file = asyncio.create_task(file.read())
+        write_console = asyncio.create_task(client.write())
 
-        return count
+        await asyncio.gather(read_file, write_console)
+
+        return ExitStatus.success
 
 if __name__ == "__main__":
     import argparse
     import sys
-    from exitstatus import ExitStatus
 
     parser = argparse.ArgumentParser(description="Start a file server.")
 
@@ -32,12 +36,11 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
 
     try:
-        count = loop.run_until_complete(main(args.file))
+        status = loop.run_until_complete(main(args.file))
     except FileNotFoundError as e:
         print(f'main.py: error: file "{args.file}": not found')
         sys.exit(ExitStatus.failure)
     finally:
         loop.close()
 
-    print(count)
-    sys.exit(ExitStatus.success)
+    sys.exit(status)
