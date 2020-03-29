@@ -10,6 +10,8 @@ pipenv-setup = "*"
 twine = "*"
 secretstorage = ">=3.1.0"
 coveralls = "*"
+coverage = "*"
+codecov = "*"
 
 [packages]
 exitstatus = "*"

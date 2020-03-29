@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0322b9864238a5306eb1ef2662075baad3cb051fdbe136129565518c0f651b3e"
+            "sha256": "9cb6c79bfd4f385ef1dc6fdcdd779970564e06626ed3467b8eb28f9c8d448789"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -40,11 +40,11 @@
         },
         "exitstatus": {
             "hashes": [
-                "sha256:6d2fc4cc1c20c3b775e979e24f6db328bd8c933d228809937fbf43988e38f12d",
-                "sha256:bed9d703671fb134b254c49c5751bfdd92cafd0c9c47ee3e8cd97b5684027b34"
+                "sha256:17780fd252ccb34e10e4bfb72ff0041213550ebb32797d8d59f2e65b899ac048",
+                "sha256:5765d08a5d7feac95f60b93a71af5c4743fed0a2fb7899410bf1b97c2cbb086b"
             ],
             "index": "pypi",
-            "version": "==1.4.0"
+            "version": "==2.0.0"
         }
     },
     "develop": {
@@ -159,6 +159,14 @@
             ],
             "version": "==7.1.1"
         },
+        "codecov": {
+            "hashes": [
+                "sha256:09fb045eb044a619cd2b9dacd7789ae8e322cb7f18196378579fd8d883e6b665",
+                "sha256:aeeefa3a03cac8a78e4f988e935b51a4689bb1f17f20d4e827807ee11135f845"
+            ],
+            "index": "pypi",
+            "version": "==2.0.22"
+        },
         "colorama": {
             "hashes": [
                 "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff",
@@ -200,6 +208,7 @@
                 "sha256:eda55e6e9ea258f5e4add23bcf33dc53b2c319e70806e180aecbff8d90ea24de",
                 "sha256:f372cdbb240e09ee855735b9d85e7f50730dcfb6296b74b95a3e5dea0615c4c1"
             ],
+            "index": "pypi",
             "version": "==5.0.4"
         },
         "coveralls": {
@@ -462,10 +471,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:4f882b23c492e7060f50d83af86f163b67e4cfbe35dfe12077e748c56282f438",
-                "sha256:f0fc945df434e5e612fb7eb93bf29e924940913590450c3760f198dd75a2cd19"
+                "sha256:03d2366c64d44c7f61e74c700d9b202d57e9efe355ea5c28814c52bfe7a50b8c",
+                "sha256:be5ddeec77d78ba781ea41eacb2358a77f74cc2407f54b82222d7ee7dc8c8ccf"
             ],
-            "version": "==4.44.0"
+            "version": "==4.44.1"
         },
         "twine": {
             "hashes": [

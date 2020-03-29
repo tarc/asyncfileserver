@@ -23,7 +23,12 @@ jobs:
         run: pipenv install --dev
       - name: Run tests and coverage
         run: pipenv run coverage run --source=asyncfileserver setup.py test
-      - name: Publish coverage
+      - name: Publish coverage in Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: pipenv run coveralls
+      - name: Publish coverage in Codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: pipenv run codecov
+
