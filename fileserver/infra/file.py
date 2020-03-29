@@ -15,12 +15,14 @@ class File(object):
         self._buffer = bytearray()
 
     async def data(self):
-        produce = asyncio.create_task(self.read())
+        read = asyncio.create_task(self.read())
         item = await self._queue.get()
         while item:
             self._queue.task_done()
             yield item
             item = await self._queue.get()
+
+        await read
 
     async def read(self):
         while await self._read():
