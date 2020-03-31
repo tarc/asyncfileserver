@@ -50,6 +50,12 @@ class TestConfirmPutQueue(aiounittest.AsyncTestCase):
 
         self.assertEqual(same_element, b'')
 
+    @staticmethod
+    async def _compose_get_task_done(queue):
+        item = await queue.get()
+        queue.task_done()
+        return item
+
     async def test_allow_some_elements(self):
         allowed_bytes = [bytes([i]) for i in (1, 3, 5, 7, 9)]
         allowed_bytearrays = [bytearray(i) for i in allowed_bytes]
@@ -62,8 +68,8 @@ class TestConfirmPutQueue(aiounittest.AsyncTestCase):
             confirm_queue.put(bytearray([i]))) for i in range(10)]
 
         get_tasks = [asyncio.create_task(
-            confirm_queue.get()) for _ in range(5)]
+            self._compose_get_task_done(confirm_queue)) for _ in range(5)]
 
-        await asyncio.gather(* get_tasks, * put_tasks)
+        * results, = await asyncio.gather(* get_tasks, * put_tasks)
 
-        self.assertEqual(queue, allowed_bytes)
+        self.assertEqual(results[0:5], allowed_bytes)
