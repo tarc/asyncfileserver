@@ -3,14 +3,7 @@ import aiounittest
 import aioconsole
 
 from asyncfileserver.infra.console_client import Client
-
-
-class BufferOutput(object):
-    def __init__(self, buffer: list):
-        self._buffer = buffer
-
-    async def print(self, data):
-        self._buffer.append(data)
+from .buffer_output import BufferOutput
 
 
 class FixedElementsQueue(object):
@@ -33,7 +26,7 @@ class FixedElementsQueue(object):
         return self._index
 
 
-class TestFile(aiounittest.AsyncTestCase):
+class TestConsoleClient(aiounittest.AsyncTestCase):
 
     def get_event_loop(self):
         return asyncio.get_event_loop()
