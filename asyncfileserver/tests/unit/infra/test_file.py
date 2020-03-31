@@ -177,9 +177,12 @@ class TestFile(aiounittest.AsyncTestCase):
                     read_buffer_size=1, queue_item_size=1)
 
         result = [bytearray([i+1]) for i in range(5)]
-        result.append(None)
+        result.extend([None, None])
 
         await file.read()
-
         self.assertEqual(async_queue.how_many_tasks_done(), 0)
+
+        async for item in file.data(): pass
+        self.assertEqual(async_queue.how_many_tasks_done(), 6)
+
         self.assertEqual(queue, result)

@@ -18,10 +18,11 @@ class File(object):
         read = asyncio.create_task(self.read())
         item = await self._queue.get()
         while item:
-            self._queue.task_done()
             yield item
+            self._queue.task_done()
             item = await self._queue.get()
 
+        self._queue.task_done()
         await read
 
     async def read(self):
