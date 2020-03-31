@@ -1,0 +1,12 @@
+coverage:
+  status:
+    project:
+      app:
+        paths: "asyncfileserver/app/"
+      infra:
+        paths: "asyncfileserver/infra/"
+      model:
+        paths: "asyncfileserver/model/"
+      tests:
+        target: 100%
+        paths: "asyncfileserver/tests/"
