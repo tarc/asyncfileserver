@@ -12,6 +12,7 @@ class FakeAsyncQueue(object):
 
     async def get(self):
         await asyncio.sleep(0)
+        await asyncio.sleep(0)
         return self._queue[self._count_task_done]
 
     def task_done(self):
