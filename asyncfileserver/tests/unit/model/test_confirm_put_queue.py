@@ -2,6 +2,7 @@ import asyncio
 import aiounittest
 
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
+from asyncfileserver.tests.unit.model.fake_async_queue import FakeAsyncQueue
 
 
 class AllowAll(object):
@@ -16,7 +17,9 @@ class TestConfirmPutQueue(aiounittest.AsyncTestCase):
 
     async def test_allow_all_arbiter(self):
         allow_all = AllowAll()
-        confirm_queue = ConfirmPutQueue(allow_all)
+        queue = []
+        fake_queue = FakeAsyncQueue(queue)
+        confirm_queue = ConfirmPutQueue(allow_all, fake_queue)
 
         singular_item = bytearray(b'')
         await confirm_queue.put(singular_item)
