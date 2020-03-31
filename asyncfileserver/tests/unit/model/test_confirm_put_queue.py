@@ -34,6 +34,12 @@ class AllowSome(object):
 
 class TestConfirmPutQueue(aiounittest.AsyncTestCase):
 
+    @staticmethod
+    async def _compose_get_task_done(queue):
+        item = await queue.get()
+        queue.task_done()
+        return item
+
     def get_event_loop(self):
         return asyncio.get_event_loop()
 
@@ -45,16 +51,11 @@ class TestConfirmPutQueue(aiounittest.AsyncTestCase):
 
         singular_item = bytearray(b'')
         put_task = asyncio.create_task(confirm_queue.put(singular_item))
-        get_task = asyncio.create_task(confirm_queue.get())
+        get_task = asyncio.create_task(
+            self._compose_get_task_done(confirm_queue))
         _, same_element = await asyncio.gather(put_task, get_task)
 
         self.assertEqual(same_element, b'')
-
-    @staticmethod
-    async def _compose_get_task_done(queue):
-        item = await queue.get()
-        queue.task_done()
-        return item
 
     async def test_allow_some_elements(self):
         allowed_bytes = [bytes([i]) for i in (1, 3, 5, 7, 9)]
