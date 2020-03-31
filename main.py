@@ -4,7 +4,7 @@ from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
 from asyncfileserver.infra.file import File
-from asyncfileserver.infra.console import Client
+from asyncfileserver.infra.console_client import Client
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
 from asyncfileserver.model.simple_queue import SimpleQueue
 
