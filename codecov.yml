@@ -1,0 +1,20 @@
+coverage:
+  status:
+    project:
+      default: false
+      app:
+        paths:
+          - "asyncfileserver/app/"
+          - "asyncfileserver/tests/unit/app/"
+      infra:
+        paths:
+          - "asyncfileserver/infra/"
+          - "asyncfileserver/tests/unit/infra/"
+      model:
+        paths:
+          - "asyncfileserver/model/"
+          - "asyncfileserver/tests/unit/model/"
+
+    patch:
+      default:
+        only_pulls: true

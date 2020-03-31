@@ -29,6 +29,9 @@ class FixedElementsQueue(object):
     def task_done(self):
         self._index = self._index + 1
 
+    def how_many_tasks_done(self) -> int:
+        return self._index
+
 
 class TestFile(aiounittest.AsyncTestCase):
 
@@ -46,3 +49,4 @@ class TestFile(aiounittest.AsyncTestCase):
 
         await client.write()
         self.assertEqual(output_elements[0], singular_element)
+        self.assertEqual(queue.how_many_tasks_done(), 1)
