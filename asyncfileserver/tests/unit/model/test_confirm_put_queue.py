@@ -58,11 +58,11 @@ class TestConfirmPutQueue(aiounittest.AsyncTestCase):
         fake_queue = FakeAsyncQueue(queue)
         confirm_queue = ConfirmPutQueue(allow_some, fake_queue)
 
-        put_tasks = [
-            asyncio.create_task(
-                confirm_queue.put(bytearray([i]))) for i in range(10)]
+        put_tasks = [asyncio.create_task(
+            confirm_queue.put(bytearray([i]))) for i in range(10)]
 
-        get_tasks = [asyncio.create_task(confirm_queue.get()) for _ in range(5)]
+        get_tasks = [asyncio.create_task(
+            confirm_queue.get()) for _ in range(5)]
 
         await asyncio.gather(* get_tasks, * put_tasks)
 
