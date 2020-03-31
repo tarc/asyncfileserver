@@ -1,4 +1,4 @@
-name: Test
+name: Test and Coverage Measuring
 
 on:
   push:
@@ -7,8 +7,7 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  build:
-    name: Test
+  test_and_compute_coverage:
     runs-on: ubuntu-latest
     strategy:
       matrix:
