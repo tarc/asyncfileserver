@@ -26,6 +26,12 @@ class FakeAsyncQueue(object):
         self._queue.append(item)
 
     async def get(self):
+
+        # Release control back to event loop. This is needed because for
+        # File.data() to work properly it must get a chance to read the file
+        # before getting a item from the queue.
+        await asyncio.sleep(0)
+
         return self._queue[self._count_task_done]
 
     def task_done(self):
@@ -160,7 +166,10 @@ class TestFile(aiounittest.AsyncTestCase):
         self.assertTrue(items == result)
 
     async def test_queue_item_size_eq_read_buffer_size_lt_file_size(self):
+        queue = []
+        async_queue = FakeAsyncQueue(queue)
         file = File(ByteArrayFile(bytearray(b"\x01\x02\x03\x04\x05")),
+                    queue=async_queue,
                     read_buffer_size=1, queue_item_size=1)
         result = [bytearray([i+1]) for i in range(5)]
         items = []
@@ -173,7 +182,7 @@ class TestFile(aiounittest.AsyncTestCase):
         queue = []
         async_queue = FakeAsyncQueue(queue)
         file = File(ByteArrayFile(bytearray(b"\x01\x02\x03\x04\x05")),
-                    queue = async_queue,
+                    queue=async_queue,
                     read_buffer_size=1, queue_item_size=1)
 
         result = [bytearray([i+1]) for i in range(5)]
@@ -182,7 +191,8 @@ class TestFile(aiounittest.AsyncTestCase):
         await file.read()
         self.assertEqual(async_queue.how_many_tasks_done(), 0)
 
-        async for item in file.data(): pass
+        async for item in file.data():
+            pass
         self.assertEqual(async_queue.how_many_tasks_done(), 6)
 
         self.assertEqual(queue, result)
