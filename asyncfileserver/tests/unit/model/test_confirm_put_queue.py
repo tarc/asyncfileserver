@@ -5,7 +5,7 @@ from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 
 
 class AllowAll(object):
-    async def process(self, item):
+    async def should_put(self, item):
         return True
 
 

@@ -14,5 +14,5 @@ class ConfirmPutQueue(object):
         self._queue.task_done()
 
     async def put(self, item: bytearray):
-        if await self._arbiter.process(item):
+        if await self._arbiter.should_put(item):
             await self._queue.put(item)
