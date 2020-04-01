@@ -32,3 +32,4 @@ class TestAsyncConsoleInput(aiounittest.AsyncTestCase):
         console = AsyncConsoleInput(reader)
 
         self.assertEqual(await console.input(), singular_object)
+        self.assertEqual(await console.input(), b'')
