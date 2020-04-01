@@ -4,10 +4,10 @@ from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
 from asyncfileserver.infra.file import File
-from asyncfileserver.infra.console_client import Client
+from asyncfileserver.model.console_client import Client
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
-from asyncfileserver.infra.console_arbiter import Arbiter
+from asyncfileserver.model.console_arbiter import Arbiter
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 
 
