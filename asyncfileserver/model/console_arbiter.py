@@ -1,7 +1,3 @@
-import asyncio
-import sys
-
-
 class Arbiter(object):
     def __init__(self, input, output):
         self._input = input

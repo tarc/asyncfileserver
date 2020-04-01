@@ -1,7 +1,3 @@
-import asyncio
-import sys
-
-
 class Client(object):
     def __init__(self, queue, output):
         self._queue = queue
