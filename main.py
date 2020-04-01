@@ -4,21 +4,25 @@ from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
 from asyncfileserver.infra.file import File
-from asyncfileserver.infra.console import Client
+from asyncfileserver.infra.console_client import Client
+from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
-from asyncfileserver.model.simple_queue import SimpleQueue
+from asyncfileserver.infra.console_arbiter import Arbiter
+from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 
 
 async def main(file_name: str) -> int:
     async with aiofiles.open(file_name, "rb") as async_file:
-        queue = SimpleQueue(asyncio.Queue())
-        file = File(file=async_file, queue=queue)
-
         streams = await create_standard_streams(sys.stdin.buffer,
                                                 sys.stdout.buffer,
                                                 sys.stderr.buffer)
-        _, writer, _ = streams
+        reader, writer, _ = streams
+        input = AsyncConsoleInput(reader)
         output = AsyncConsoleOutput(writer)
+        arbiter = Arbiter(input, output)
+        queue = ConfirmPutQueue(arbiter, asyncio.Queue())
+        file = File(file=async_file, queue=queue)
+
         client = Client(queue, output)
 
         read_file = asyncio.create_task(file.read())
