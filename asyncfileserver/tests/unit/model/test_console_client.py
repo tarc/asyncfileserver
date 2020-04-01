@@ -2,8 +2,8 @@ import asyncio
 import aiounittest
 import aioconsole
 
-from asyncfileserver.infra.console_client import Client
-from .buffer_output import BufferOutput
+from asyncfileserver.model.console_client import Client
+from ..infra.buffer_output import BufferOutput
 
 
 class FixedElementsQueue(object):

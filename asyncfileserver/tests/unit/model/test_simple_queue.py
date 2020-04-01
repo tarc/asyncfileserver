@@ -2,7 +2,7 @@ import asyncio
 import aiounittest
 
 from asyncfileserver.model.simple_queue import SimpleQueue
-from asyncfileserver.tests.unit.model.fake_async_queue import FakeAsyncQueue
+from ..model.fake_async_queue import FakeAsyncQueue
 
 
 class TestSimpleQueue(aiounittest.AsyncTestCase):

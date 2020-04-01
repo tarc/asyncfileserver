@@ -1,9 +1,9 @@
 import asyncio
 import aiounittest
 
-from asyncfileserver.infra.console_arbiter import Arbiter
-from .buffer_output import BufferOutput
-from .queue_input import QueueInput
+from asyncfileserver.model.console_arbiter import Arbiter
+from asyncfileserver.tests.unit.infra.buffer_output import BufferOutput
+from asyncfileserver.tests.unit.infra.queue_input import QueueInput
 
 
 class TestConsoleArbiter(aiounittest.AsyncTestCase):
