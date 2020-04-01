@@ -1,6 +1,5 @@
 import asyncio
 import aiounittest
-import aioconsole
 
 from asyncfileserver.infra.console_arbiter import Arbiter
 from .buffer_output import BufferOutput
@@ -21,6 +20,21 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
 
         singular_object = object()
 
-        await arbiter.should_put(singular_object)
-
+        self.assertTrue(await arbiter.should_put(singular_object))
         self.assertEqual(output_buffer, [singular_object])
+
+    async def test_deny_and_allow(self):
+        output_buffer = []
+        output = BufferOutput(output_buffer)
+        input_queue = [b'N\n', b'Y\n']
+        input = QueueInput(input_queue)
+        arbiter = Arbiter(input, output)
+
+        first_element = object()
+        second_element = object()
+
+        self.assertFalse(await arbiter.should_put(first_element))
+        self.assertEqual(output_buffer, [first_element])
+
+        self.assertTrue(await arbiter.should_put(second_element))
+        self.assertEqual(output_buffer, [first_element, second_element])
