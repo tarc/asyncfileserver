@@ -5,7 +5,9 @@ class Client(object):
 
     async def write(self):
         item = await self._queue.get()
-        self._queue.task_done()
         while(item):
             await self._output.print(item)
+            self._queue.task_done()
             item = await self._queue.get()
+
+        self._queue.task_done()

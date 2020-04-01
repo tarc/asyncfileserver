@@ -42,4 +42,4 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
 
         await client.write()
         self.assertEqual(output_elements[0], singular_element)
-        self.assertEqual(queue.how_many_tasks_done(), 1)
+        self.assertEqual(queue.how_many_tasks_done(), 2)
