@@ -1,4 +1,5 @@
 from asyncfileserver.model.view_data import ViewData
+from asyncfileserver.model.confirm_command import ConfirmCommand
 
 
 class Arbiter(object):
@@ -13,6 +14,7 @@ class Arbiter(object):
 
         view_item = ViewData(item)
         await self._output.print(f"\n{view_item}\n> ")
-        command = await self._input.input()
-        self._continue = command == b"C\n"
-        return self._continue or command == b"Y\n"
+        command = ConfirmCommand(await self._input.input())
+
+        self._continue = command.go_on()
+        return command.go_on() or command.yes()
