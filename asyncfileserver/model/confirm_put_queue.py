@@ -1,8 +1,5 @@
-import asyncio
-
-
 class ConfirmPutQueue(object):
-    def __init__(self, arbiter, queue=asyncio.Queue()):
+    def __init__(self, arbiter, queue):
         self._arbiter = arbiter
         self._queue = queue
 

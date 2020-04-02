@@ -4,11 +4,13 @@ from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
 from asyncfileserver.infra.file import File
-from asyncfileserver.infra.console_client import Client
+from asyncfileserver.model.client import Client
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
-from asyncfileserver.infra.console_arbiter import Arbiter
+from asyncfileserver.model.ask_answer_arbiter import AskAnswerArbiter as Arbiter
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
+from asyncfileserver.model.view_data_factory import ViewDataFactory
+from asyncfileserver.model.confirm_command_factory import ConfirmCommandFactory
 
 
 async def main(file_name: str) -> int:
@@ -19,7 +21,8 @@ async def main(file_name: str) -> int:
         reader, writer, _ = streams
         input = AsyncConsoleInput(reader)
         output = AsyncConsoleOutput(writer)
-        arbiter = Arbiter(input, output)
+        arbiter = Arbiter(input, output, ViewDataFactory(),
+            ConfirmCommandFactory())
         queue = ConfirmPutQueue(arbiter, asyncio.Queue())
         file = File(file=async_file, queue=queue)
 

@@ -2,8 +2,8 @@ import asyncio
 import aiounittest
 import aioconsole
 
-from asyncfileserver.infra.console_client import Client
-from .buffer_output import BufferOutput
+from asyncfileserver.model.client import Client
+from ..infra.buffer_output import BufferOutput
 
 
 class FixedElementsQueue(object):
@@ -42,4 +42,4 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
 
         await client.write()
         self.assertEqual(output_elements[0], singular_element)
-        self.assertEqual(queue.how_many_tasks_done(), 1)
+        self.assertEqual(queue.how_many_tasks_done(), 2)
