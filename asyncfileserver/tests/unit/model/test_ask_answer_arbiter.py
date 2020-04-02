@@ -62,7 +62,7 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
         self.assertEqual(output_buffer, [f"\n{view}\n> "])
 
     async def test_deny_and_allow(self):
-        input_buffer = [object(), object()]
+        input_buffer = [object(), object(), object(), object()]
         input_queue = QueueInput(input_buffer)
 
         output_buffer = []
@@ -71,18 +71,22 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
         view1 = ViewDataMock("DATA1")
         view2 = ViewDataMock("DATA2")
         view3 = ViewDataMock("DATA3")
+        view4 = ViewDataMock("DATA4")
 
         command1 = ConfirmCommandMock(False, False)
         command2 = ConfirmCommandMock(False, True)
         command3 = ConfirmCommandMock(True, False)
+        command4 = ConfirmCommandMock(False, False)
 
         arbiter = AskAnswerArbiter(input_queue, output,
-                                   FactoryMock([view1, view2, view3]),
-                                   FactoryMock([command1, command2, command3]))
+                                   FactoryMock([view1, view2, view3, view4]),
+                                   FactoryMock([command1, command2, command3,
+                                                command4]))
 
         singular_object1 = object()
         singular_object2 = object()
         singular_object3 = object()
+        singular_object4 = object()
 
         self.assertFalse(await arbiter.should_put(singular_object1))
         self.assertEqual(output_buffer, [f"\n{view1}\n> "])
@@ -93,3 +97,7 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
         self.assertTrue(await arbiter.should_put(singular_object3))
         self.assertEqual(output_buffer,
             [f"\n{view1}\n> ", f"\n{view2}\n> ", f"\n{view3}\n> "])
+
+        self.assertTrue(await arbiter.should_put(singular_object4))
+        self.assertEqual(output_buffer,
+                         [f"\n{view1}\n> ", f"\n{view2}\n> ", f"\n{view3}\n> "])
