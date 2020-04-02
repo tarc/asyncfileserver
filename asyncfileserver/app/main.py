@@ -3,6 +3,8 @@ import aiofiles
 from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
+from asyncfileserver import __version__
+
 from asyncfileserver.infra.file import File
 from asyncfileserver.model.client import Client
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
@@ -41,10 +43,16 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Start a file server.")
 
-    parser.add_argument("-f", "--file", type=str, required=True,
-                        help="file to be served")
+    parser.add_argument("-f", "--file", type=str, help="file to be served")
+
+    parser.add_argument("-v", "--version",
+                        action='store_true', help="show version")
 
     args = parser.parse_args()
+
+    if args.version:
+        print(__version__)
+        sys.exit(ExitStatus.success)
 
     loop = asyncio.get_event_loop()
 
