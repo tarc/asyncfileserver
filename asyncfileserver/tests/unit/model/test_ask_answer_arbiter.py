@@ -96,7 +96,7 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
 
         self.assertTrue(await arbiter.should_put(singular_object3))
         self.assertEqual(output_buffer,
-            [f"\n{view1}\n> ", f"\n{view2}\n> ", f"\n{view3}\n> "])
+                         [f"\n{view1}\n> ", f"\n{view2}\n> ", f"\n{view3}\n> "])
 
         self.assertTrue(await arbiter.should_put(singular_object4))
         self.assertEqual(output_buffer,
