@@ -70,19 +70,26 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
 
         view1 = ViewDataMock("DATA1")
         view2 = ViewDataMock("DATA2")
+        view3 = ViewDataMock("DATA3")
 
         command1 = ConfirmCommandMock(False, False)
         command2 = ConfirmCommandMock(False, True)
+        command3 = ConfirmCommandMock(True, False)
 
         arbiter = AskAnswerArbiter(input_queue, output,
-                                   FactoryMock([view1, view2]),
-                                   FactoryMock([command1, command2]))
+                                   FactoryMock([view1, view2, view3]),
+                                   FactoryMock([command1, command2, command3]))
 
         singular_object1 = object()
         singular_object2 = object()
+        singular_object3 = object()
 
         self.assertFalse(await arbiter.should_put(singular_object1))
         self.assertEqual(output_buffer, [f"\n{view1}\n> "])
 
         self.assertTrue(await arbiter.should_put(singular_object2))
         self.assertEqual(output_buffer, [f"\n{view1}\n> ", f"\n{view2}\n> "])
+
+        self.assertTrue(await arbiter.should_put(singular_object3))
+        self.assertEqual(output_buffer,
+            [f"\n{view1}\n> ", f"\n{view2}\n> ", f"\n{view3}\n> "])
