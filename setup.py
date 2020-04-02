@@ -101,7 +101,7 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         # These classifiers are *not* checked by 'pip install'. See instead
         # 'python_requires' below.
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.7",
     ],
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
@@ -123,7 +123,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.8",
+    python_requires=">=3.7",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -181,7 +181,7 @@ setup(
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
     entry_points={
-        "console_scripts": ["asyncfileserver=asyncfilserserver.app.main:main"]
+        "console_scripts": ["asyncfileserver=asyncfileserver.app.main:main"]
     },  # Optional
     # List additional URLs that are relevant to your project as a dict.
     #
