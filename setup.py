@@ -15,6 +15,9 @@ from os import path
 # Python 3 only projects can skip this import
 from io import open
 
+# Versioneer for version management.
+import versioneer
+
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
@@ -195,4 +198,7 @@ setup(
         "Say Thanks!": "http://saythanks.io/to/example",
         "Source": "https://github.com/pypa/sampleproject/",
     },
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
+
 )
