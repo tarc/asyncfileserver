@@ -2,7 +2,7 @@ name: Test and Coverage Measuring
 
 on:
   push:
-    branches: [ feature/*, hotfix/* ]
+    branches: [ master, develop, feature/*, hotfix/* ]
   pull_request:
     branches: [ master, develop ]
 
