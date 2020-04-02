@@ -9,16 +9,13 @@ on:
 jobs:
   test_and_compute_coverage:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
 
     steps:
       - uses: actions/checkout@v2
       - name: Setup python
         uses: actions/setup-python@v1
         with:
-          python-version: ">= 3.5"
+          python-version: ">= 3.7"
       - uses: dschep/install-pipenv-action@v1
       - name: Install dependencies
         run: pipenv install --dev

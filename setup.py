@@ -151,6 +151,7 @@ setup(
             "codecov",
             "jupyter",
             "notebook",
+            "versioneer",
         ]
     },  # Optional
     # If there are data files included in your packages that need to be
@@ -200,5 +201,4 @@ setup(
     },
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-
 )
