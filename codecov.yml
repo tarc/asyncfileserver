@@ -21,3 +21,4 @@ coverage:
 
 ignore:
   - "asyncfileserver/app/main.py"
+  - "asyncfileserver/_version.py"
