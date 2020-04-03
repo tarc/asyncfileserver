@@ -25,7 +25,7 @@ jobs:
         git config --local user.email "tarcisio.genaro@gmail.com"
         git config --local user.name "tarc"
         git tag ${{steps.set_version.outputs.new_tag}}
-        git push "https://tarc:${{ secrets.REPO_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:master --tags
+        git push "https://tarc:${{ secrets.PAT_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" HEAD:master --tags
 
     - name: Echo new_tag
       run: |
