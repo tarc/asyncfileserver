@@ -2,15 +2,8 @@ import asyncio
 import aiounittest
 import aioconsole
 
-from asyncfileserver.infra.console import Client
-
-
-class BufferOutput(object):
-    def __init__(self, buffer: list):
-        self._buffer = buffer
-
-    async def print(self, data):
-        self._buffer.append(data)
+from asyncfileserver.model.client import Client
+from ..infra.buffer_output import BufferOutput
 
 
 class FixedElementsQueue(object):
@@ -29,8 +22,11 @@ class FixedElementsQueue(object):
     def task_done(self):
         self._index = self._index + 1
 
+    def how_many_tasks_done(self) -> int:
+        return self._index
 
-class TestFile(aiounittest.AsyncTestCase):
+
+class TestConsoleClient(aiounittest.AsyncTestCase):
 
     def get_event_loop(self):
         return asyncio.get_event_loop()
@@ -46,3 +42,4 @@ class TestFile(aiounittest.AsyncTestCase):
 
         await client.write()
         self.assertEqual(output_elements[0], singular_element)
+        self.assertEqual(queue.how_many_tasks_done(), 2)

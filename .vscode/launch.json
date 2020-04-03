@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Arquivo Atual",
+            "name": "Python: Módulo",
             "type": "python",
             "request": "launch",
-            "program": "main.py",
-            "args": ["-f", "../bla.fix"],
-            "console": "integratedTerminal"
+            "module": "asyncfileserver.app.main",
+            "args": ["-f", "../ba.fix"]
+            // "args": ["--version"]
         }
-    ]
+     ]
 }
