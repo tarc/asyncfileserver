@@ -1,7 +1,11 @@
+import argparse
 import asyncio
 import aiofiles
+import sys
 from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
+
+from asyncfileserver import __version__
 
 from asyncfileserver.infra.file import File
 from asyncfileserver.model.client import Client
@@ -13,7 +17,7 @@ from asyncfileserver.model.view_data_factory import ViewDataFactory
 from asyncfileserver.model.confirm_command_factory import ConfirmCommandFactory
 
 
-async def main(file_name: str) -> int:
+async def asyncfileserver(file_name: str) -> int:
     async with aiofiles.open(file_name, "rb") as async_file:
         streams = await create_standard_streams(sys.stdin.buffer,
                                                 sys.stdout.buffer,
@@ -22,7 +26,7 @@ async def main(file_name: str) -> int:
         input = AsyncConsoleInput(reader)
         output = AsyncConsoleOutput(writer)
         arbiter = Arbiter(input, output, ViewDataFactory(),
-            ConfirmCommandFactory())
+                          ConfirmCommandFactory())
         queue = ConfirmPutQueue(arbiter, asyncio.Queue())
         file = File(file=async_file, queue=queue)
 
@@ -35,28 +39,39 @@ async def main(file_name: str) -> int:
 
         return ExitStatus.success
 
-if __name__ == "__main__":
-    import argparse
-    import sys
+
+def main():
 
     parser = argparse.ArgumentParser(description="Start a file server.")
 
-    parser.add_argument("-f", "--file", type=str, required=True,
+    parser.add_argument("-f", "--file", type=str,
                         help="file to be served")
 
+    parser.add_argument("-v", "--version", action='store_true',
+                        help="show version")
+
     args = parser.parse_args()
+
+    if args.version:
+        print(f"asyncfileserver version {__version__}")
+        sys.exit(ExitStatus.success)
+
+    if args.file == None:
+        parser.error("the following argument is required: FILE")
 
     loop = asyncio.get_event_loop()
 
     try:
-        status = loop.run_until_complete(main(args.file))
+        status = loop.run_until_complete(asyncfileserver(args.file))
     except FileNotFoundError as e:
-        print(f'main.py: error: file "{args.file}": not found', file=sys.stderr)
-        sys.exit(ExitStatus.failure)
+        parser.error(f'file "{args.file}": not found')
     except TypeError as e:
-        print(f'main.py: error: type error: {e}', file=sys.stderr)
-        sys.exit(ExitStatus.failure)
+        parser.error(f'type error: {e}')
     finally:
         loop.close()
 
     sys.exit(status)
+
+
+if __name__ == "__main__":
+    main()

@@ -18,3 +18,7 @@ coverage:
     patch:
       default:
         only_pulls: true
+
+ignore:
+  - "asyncfileserver/app/main.py"
+  - "asyncfileserver/_version.py"

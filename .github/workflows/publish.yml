@@ -15,10 +15,10 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v1
         with:
-          python-version: ">= 3.5"
+          python-version: ">= 3.7"
       - uses: dschep/install-pipenv-action@v1
       - name: Install dependencies
-        run: pipenv install --dev
+        run: pipenv install --dev --python $pythonLocation/bin/python
 
       - name: Build and publish
         env:
@@ -27,4 +27,3 @@ jobs:
         run: |
           pipenv run python setup.py sdist
           pipenv run twine upload dist/*
-

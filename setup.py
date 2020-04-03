@@ -15,6 +15,9 @@ from os import path
 # Python 3 only projects can skip this import
 from io import open
 
+# Versioneer for version management.
+import versioneer
+
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
@@ -43,7 +46,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="0.0.1",  # Required
+    # version="0.0.1",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -98,7 +101,7 @@ setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         # These classifiers are *not* checked by 'pip install'. See instead
         # 'python_requires' below.
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.7",
     ],
     # This field adds keywords for your project which will appear on the
     # project page. What does your project relate to?
@@ -120,7 +123,7 @@ setup(
     # and refuse to install the project if the version does not match. If you
     # do not support Python 2, you can simplify this to '>=3.5' or similar, see
     # https://packaging.python.org/guides/distributing-packages-using-setuptools/#python-requires
-    python_requires=">=3.8",
+    python_requires=">=3.7",
     # This field lists other packages that your project depends on to run.
     # Any package you put here will be installed by pip when your project is
     # installed, so they must be valid existing projects.
@@ -136,7 +139,21 @@ setup(
     #
     # Similar to `install_requires` above, these must be valid existing
     # projects.
-    extras_require={"dev": []},  # Optional
+    extras_require={
+        "dev": [
+            "autopep8",
+            "aiounittest",
+            "pipenv-setup",
+            "twine",
+            "secretstorage>=3.1.0",
+            "coveralls",
+            "coverage",
+            "codecov",
+            "jupyter",
+            "notebook",
+            "versioneer",
+        ]
+    },  # Optional
     # If there are data files included in your packages that need to be
     # installed, specify them here.
     #
@@ -164,9 +181,9 @@ setup(
     #
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
-
-    entry_points={"console_scripts": ["asyncfileserver=asyncfilserserver.app.main:main"]},  # Optional
-
+    entry_points={
+        "console_scripts": ["asyncfileserver=asyncfileserver.app.main:main"]
+    },  # Optional
     # List additional URLs that are relevant to your project as a dict.
     #
     # This field corresponds to the "Project-URL" metadata fields:
@@ -182,4 +199,6 @@ setup(
         "Say Thanks!": "http://saythanks.io/to/example",
         "Source": "https://github.com/pypa/sampleproject/",
     },
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
 )

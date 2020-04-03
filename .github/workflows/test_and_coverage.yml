@@ -2,26 +2,23 @@ name: Test and Coverage Measuring
 
 on:
   push:
-    branches: [ master, develop, feature/*, hotfix/* ]
+    branches: [ master, develop, feature/*, hotfix/*, release/* ]
   pull_request:
     branches: [ master, develop ]
 
 jobs:
   test_and_compute_coverage:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8]
 
     steps:
       - uses: actions/checkout@v2
       - name: Setup python
         uses: actions/setup-python@v1
         with:
-          python-version: ">= 3.5"
+          python-version: ">= 3.7"
       - uses: dschep/install-pipenv-action@v1
       - name: Install dependencies
-        run: pipenv install --dev
+        run: pipenv install --dev --python $pythonLocation/bin/python
       - name: Run tests and coverage
         run: pipenv run coverage run --source asyncfileserver setup.py test
       - name: Create XML report of coverage results
