@@ -13,7 +13,7 @@ jobs:
         token: ${{ secrets.PAT_TOKEN }}
         persist-credentials: false
     - name: Bump version and push tag
-        id: set_version
+      id: set_version
       uses: anothrNick/github-tag-action@1.17.2
       env:
         WITH_V: true
