@@ -15,6 +15,8 @@ jobs:
     - name: Bump version and push tag
       id: set_version
       uses: anothrNick/github-tag-action@1.17.2
+      with:
+        token: ${{ secrets.PAT_TOKEN }}
       env:
         WITH_V: true
         DRY_RUN: true
