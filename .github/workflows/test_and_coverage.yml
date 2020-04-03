@@ -17,6 +17,9 @@ jobs:
         with:
           python-version: ">= 3.7"
       - uses: dschep/install-pipenv-action@v1
+      - name: Echo pythonLocation
+        run: |
+          echo pythonLocation: $pythonLocation
       - name: Install dependencies
         run: pipenv install --dev
       - name: Run tests and coverage
