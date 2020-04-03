@@ -21,7 +21,7 @@ jobs:
         run: |
           echo pythonLocation: $pythonLocation
       - name: Install dependencies
-        run: pipenv install --dev
+        run: pipenv install --dev --python $pythonLocation/bin/python
       - name: Run tests and coverage
         run: pipenv run coverage run --source asyncfileserver setup.py test
       - name: Create XML report of coverage results
