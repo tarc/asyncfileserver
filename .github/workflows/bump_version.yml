@@ -12,9 +12,9 @@ jobs:
         fetch-depth: '0'
         token: ${{ secrets.PAT_TOKEN }}
         persist-credentials: false
-    - name: Bump version and push tag
+    - name: Compute bump version
       id: set_version
-      uses: anothrNick/github-tag-action@1.17.2
+      uses: anothrNick/github-tag-action@1.19.0
       with:
         token: ${{ secrets.PAT_TOKEN }}
       env:
@@ -26,7 +26,3 @@ jobs:
         git config --local user.name "tarc"
         git tag ${{steps.set_version.outputs.new_tag}}
         git push "https://tarc:${{ secrets.PAT_TOKEN }}@github.com/$GITHUB_REPOSITORY.git" HEAD:master --tags
-
-    - name: Echo new_tag
-      run: |
-        echo new_tag: ${{steps.set_version.outputs.new_tag}}
