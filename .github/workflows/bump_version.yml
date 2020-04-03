@@ -11,6 +11,7 @@ jobs:
       with:
         fetch-depth: '0'
         token: ${{ secrets.PAT_TOKEN }}
+        persist-credentials: false
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.17.2
       env:
