@@ -11,7 +11,7 @@ from asyncfileserver.infra.file import File
 from asyncfileserver.model.client import Client
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
-from asyncfileserver.model.ask_answer_arbiter import AskAnswerArbiter as Arbiter
+from asyncfileserver.app.ask_answer_arbiter import AskAnswerArbiter as Arbiter
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 from asyncfileserver.model.view_data_factory import ViewDataFactory
 from asyncfileserver.model.confirm_command_factory import ConfirmCommandFactory

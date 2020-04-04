@@ -1,7 +1,7 @@
 import asyncio
 import aiounittest
 
-from asyncfileserver.model.ask_answer_arbiter import AskAnswerArbiter
+from asyncfileserver.app.ask_answer_arbiter import AskAnswerArbiter
 from asyncfileserver.tests.unit.infra.buffer_output import BufferOutput
 from asyncfileserver.tests.unit.infra.queue_input import QueueInput
 
