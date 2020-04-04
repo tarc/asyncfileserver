@@ -1,7 +1,13 @@
 class Client(object):
-    def __init__(self, queue, output):
+    def __init__(self, queue, input, output):
         self._queue = queue
+        self._input = input
         self._output = output
+
+    async def read(self):
+        item = await self._input()
+        while(item):
+            item = await self._input()
 
     async def write(self):
         item = await self._queue.get()

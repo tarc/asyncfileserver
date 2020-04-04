@@ -26,6 +26,10 @@ class FixedElementsQueue(object):
         return self._index
 
 
+async def input():
+    return False
+
+
 class TestConsoleClient(aiounittest.AsyncTestCase):
 
     def get_event_loop(self):
@@ -38,8 +42,8 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
         output_elements = []
         output = BufferOutput(output_elements)
 
-        client = Client(queue, output)
+        client = Client(queue, input, output)
 
-        await client.write()
+        await asyncio.gather(client.write(), client.read())
         self.assertEqual(output_elements[0], singular_element)
         self.assertEqual(queue.how_many_tasks_done(), 2)
