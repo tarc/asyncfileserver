@@ -17,6 +17,19 @@ from asyncfileserver.model.view_data_factory import ViewDataFactory
 from asyncfileserver.model.confirm_command_factory import ConfirmCommandFactory
 
 
+class NullInput(object):
+    pass
+
+class NullParser(object):
+    pass
+
+class IdentityFormatter(object):
+    def format(self, item):
+        return item
+
+class NullQueue(object):
+    pass
+
 async def asyncfileserver(file_name: str) -> int:
     async with aiofiles.open(file_name, "rb") as async_file:
         streams = await create_standard_streams(sys.stdin.buffer,
@@ -30,7 +43,8 @@ async def asyncfileserver(file_name: str) -> int:
         queue = ConfirmPutQueue(arbiter, asyncio.Queue())
         file = File(file=async_file, queue=queue)
 
-        client = Client(queue, output)
+        client = Client(NullInput(), NullParser(), NullQueue(),
+                        queue, IdentityFormatter(), output)
 
         read_file = asyncio.create_task(file.read())
         write_console = asyncio.create_task(client.write())

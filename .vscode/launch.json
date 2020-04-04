@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "module": "asyncfileserver.app.main",
-            "args": ["-f", "../ba.fix"]
+            "args": ["-f", "../bla.fix"]
             // "args": ["--version"]
         }
      ]
