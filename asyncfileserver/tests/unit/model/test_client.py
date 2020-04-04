@@ -30,6 +30,24 @@ async def input():
     return False
 
 
+class NullInput(object):
+    async def read(self):
+        return None
+
+
+class NullParser(object):
+    pass
+
+
+class IdentityFormatter(object):
+    def format(self, item):
+        return item
+
+
+class NullQueue(object):
+    pass
+
+
 class TestConsoleClient(aiounittest.AsyncTestCase):
 
     def get_event_loop(self):
@@ -42,7 +60,8 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
         output_elements = []
         output = BufferOutput(output_elements)
 
-        client = Client(queue, input, output)
+        client = Client(NullInput(), NullParser(), NullQueue(),
+                        queue, IdentityFormatter(), output)
 
         await asyncio.gather(client.write(), client.read())
         self.assertEqual(output_elements[0], singular_element)
