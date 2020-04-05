@@ -27,4 +27,4 @@ class TestAsyncConsoleInput(aiounittest.AsyncTestCase):
 
         singular_object = object()
         await console.print(singular_object)
-        self.assertEqual(lines, [singular_object])
+        self.assertEqual(lines, [str(singular_object)])

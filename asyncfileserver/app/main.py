@@ -5,32 +5,87 @@ import sys
 from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
 
-from asyncfileserver import __version__
-
 from asyncfileserver.infra.file import File
-from asyncfileserver.model.client import Client
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
+from asyncfileserver.infra.asyncio_server_factory import ServerFactory
 from asyncfileserver.app.ask_answer_arbiter import AskAnswerArbiter as Arbiter
+from asyncfileserver.app.repl_controller import Controller
+from asyncfileserver.model.client import Client
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 from asyncfileserver.model.data_view_formatter import DataViewFormatter
 from asyncfileserver.model.confirm_command_parser import ConfirmCommandParser
+from asyncfileserver.model.repl_command_parser import REPLCommandParser
+from asyncfileserver.model.repl_response_formatter import REPLResponseFormatter
+from asyncfileserver.model.exception_formatter import ExceptionFormatter
+from asyncfileserver.model.listener import Listener
+
+
+async def start_client(reader, writer):
+    pass
 
 
 class NullInput(object):
     pass
 
+
 class NullParser(object):
     pass
+
 
 class IdentityFormatter(object):
     def format(self, item):
         return item
 
+
 class NullQueue(object):
     pass
 
-async def asyncfileserver(file_name: str) -> int:
+
+async def asyncfileserver(file_name: str,
+                          address: str = "0.0.0.0", port: int = 6666) -> int:
+
+    streams = await create_standard_streams(sys.stdin.buffer,
+                                            sys.stdout.buffer,
+                                            sys.stderr.buffer)
+    reader, writer, error = streams
+    console_input = AsyncConsoleInput(reader)
+    console_output = AsyncConsoleOutput(writer)
+    error_output = AsyncConsoleOutput(error)
+
+    server_factory = ServerFactory(address, port, start_client)
+    listener = Listener(server_factory)
+
+    async def start_command():
+        await listener.listen()
+        return "Finished listening."
+
+    async def stop_command():
+        await listener.stop()
+
+    async def quit_command():
+        pass
+
+    async def error_command():
+        pass
+
+    exception_formatter = ExceptionFormatter()
+    controller = Controller(console_input, REPLCommandParser(),
+                            console_output, REPLResponseFormatter(),
+                            error_output, exception_formatter,
+                            start_command, stop_command, quit_command,
+                            error_command)
+
+    control_task = asyncio.create_task(controller.control())
+
+    try:
+        await asyncio.gather(control_task)
+    except Exception as e:
+        exception_formatted = exception_formatter(e)
+        error_output.print(f"TOP LEVEL EXCEPTION: {exception_formatted}")
+
+    return ExitStatus.success
+
     async with aiofiles.open(file_name, "rb") as async_file:
         streams = await create_standard_streams(sys.stdin.buffer,
                                                 sys.stdout.buffer,
@@ -67,6 +122,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
+        from asyncfileserver import __version__
         print(f"asyncfileserver version {__version__}")
         sys.exit(ExitStatus.success)
 
@@ -77,14 +133,13 @@ def main():
 
     try:
         status = loop.run_until_complete(asyncfileserver(args.file))
+        sys.exit(status)
     except FileNotFoundError as e:
         parser.error(f'file "{args.file}": not found')
     except TypeError as e:
         parser.error(f'type error: {e}')
     finally:
         loop.close()
-
-    sys.exit(status)
 
 
 if __name__ == "__main__":
