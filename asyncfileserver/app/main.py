@@ -13,8 +13,8 @@ from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
 from asyncfileserver.app.ask_answer_arbiter import AskAnswerArbiter as Arbiter
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
-from asyncfileserver.model.view_data_factory import ViewDataFactory
-from asyncfileserver.model.confirm_command_factory import ConfirmCommandFactory
+from asyncfileserver.model.data_view_formatter import DataViewFormatter
+from asyncfileserver.model.confirm_command_parser import ConfirmCommandParser
 
 
 class NullInput(object):
@@ -38,8 +38,8 @@ async def asyncfileserver(file_name: str) -> int:
         reader, writer, _ = streams
         input = AsyncConsoleInput(reader)
         output = AsyncConsoleOutput(writer)
-        arbiter = Arbiter(input, output, ViewDataFactory(),
-                          ConfirmCommandFactory())
+        arbiter = Arbiter(input, output, DataViewFormatter(),
+                          ConfirmCommandParser())
         queue = ConfirmPutQueue(arbiter, asyncio.Queue())
         file = File(file=async_file, queue=queue)
 

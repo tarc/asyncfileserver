@@ -6,7 +6,7 @@ from asyncfileserver.tests.unit.infra.buffer_output import BufferOutput
 from asyncfileserver.tests.unit.infra.queue_input import QueueInput
 
 
-class ViewDataMock(object):
+class DataViewMock(object):
     def __init__(self, representation):
         self._representation = representation
 
@@ -26,12 +26,23 @@ class ConfirmCommandMock(object):
         return self._yes
 
 
-class FactoryMock(object):
+class ParserMock(object):
     def __init__(self, instances):
         self._instances = instances
         self._index = 0
 
-    def create(self, data: bytearray):
+    def parse(self, data: bytearray):
+        instance = self._instances[self._index]
+        self._index = self._index + 1
+        return instance
+
+
+class FormatterMock(object):
+    def __init__(self, instances):
+        self._instances = instances
+        self._index = 0
+
+    def format(self, data: bytearray):
         instance = self._instances[self._index]
         self._index = self._index + 1
         return instance
@@ -49,12 +60,12 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
         input_buffer = [object()]
         input_queue = QueueInput(input_buffer)
 
-        view = ViewDataMock("DATA")
+        view = DataViewMock("DATA")
         command = ConfirmCommandMock(False, True)
 
         arbiter = AskAnswerArbiter(input_queue, output,
-                                   FactoryMock([view]),
-                                   FactoryMock([command]))
+                                   FormatterMock([view]),
+                                   ParserMock([command]))
 
         singular_object = object()
 
@@ -68,10 +79,10 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
         output_buffer = []
         output = BufferOutput(output_buffer)
 
-        view1 = ViewDataMock("DATA1")
-        view2 = ViewDataMock("DATA2")
-        view3 = ViewDataMock("DATA3")
-        view4 = ViewDataMock("DATA4")
+        view1 = DataViewMock("DATA1")
+        view2 = DataViewMock("DATA2")
+        view3 = DataViewMock("DATA3")
+        view4 = DataViewMock("DATA4")
 
         command1 = ConfirmCommandMock(False, False)
         command2 = ConfirmCommandMock(False, True)
@@ -79,9 +90,9 @@ class TestConsoleArbiter(aiounittest.AsyncTestCase):
         command4 = ConfirmCommandMock(False, False)
 
         arbiter = AskAnswerArbiter(input_queue, output,
-                                   FactoryMock([view1, view2, view3, view4]),
-                                   FactoryMock([command1, command2, command3,
-                                                command4]))
+                                   FormatterMock([view1, view2, view3, view4]),
+                                   ParserMock([command1, command2, command3,
+                                               command4]))
 
         singular_object1 = object()
         singular_object2 = object()
