@@ -29,6 +29,8 @@ class Client(object):
 
             data = await self._input.input()
 
+        await self._command_queue.put(None)
+
     async def write(self):
         item = await self._response_queue.get()
         data = self._response_formatter.format(item)
