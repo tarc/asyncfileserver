@@ -18,7 +18,7 @@ class ConfirmCommandParser(object):
         m = re.match(self._non_command_pattern, data)
         if m != None:
             self._command = ConfirmCommand(data[:m.end()], True)
-            return self._consume_up_to_eol(data, m.end())
+            return self._consume_up_to_eol(data, m.end()-1)
 
         m = re.match(self._command_pattern, data)
         if m != None:
