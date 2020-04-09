@@ -122,3 +122,18 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
 
         await asyncio.gather(client.write(), client.read())
         self.assertEqual(queue, input_list + [None])
+
+    async def test_parsing_broken_commands_input_output(self):
+        input_list = [
+            b''
+        ]
+        input = QueueInput(input_list)
+
+        queue = []
+        async_queue = FakeAsyncQueue(queue)
+
+        client = Client(input, IdentityParser(), async_queue,
+                        NullQueue(), NullFormatter(), NullOutput())
+
+        await asyncio.gather(client.write(), client.read())
+        self.assertEqual(queue, [None])
