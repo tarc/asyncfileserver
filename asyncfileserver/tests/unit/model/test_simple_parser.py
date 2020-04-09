@@ -1,10 +1,14 @@
 import unittest
+from unittest.mock import MagicMock
 
 from asyncfileserver.model.simple_parser import SimpleParser
-from asyncfileserver.infra.pytrie import TrieFactory
 
 
 class TestSimpleParser(unittest.TestCase):
+
+    @staticmethod
+    def t_f(d): return lambda k: d[k]
+
     def test_parse_one_command_prefix_of_the_other(self):
 
         AB = object()
@@ -20,7 +24,35 @@ class TestSimpleParser(unittest.TestCase):
             A
         ]
 
-        parser = SimpleParser(tag_commands, commands, error, TrieFactory())
+        is_prefix_of_some_key = TestSimpleParser.t_f({
+            b'A': True,
+            b'A ': False,
+            b'\nAB': False,
+            b'AB\r': False,
+            b'AB': True,
+            b'ABA': False,
+            b'\r': False,
+            b'A AB A AB\nA': False
+        })
+
+        longest_key_prefix_of = TestSimpleParser.t_f({
+            b'A': (b'A', A),
+            b'A ': (b'A', A),
+            b'\nAB': None,
+            b'AB\r': (b'AB', AB),
+            b'AB':  (b'AB', AB),
+            b'ABA': (b'AB', AB),
+            b'\r': None,
+            b'A AB A AB\nA': (b'A', A),
+        })
+
+        trie = MagicMock(is_prefix_of_some_key=is_prefix_of_some_key,
+                         longest_key_prefix_of=longest_key_prefix_of)
+
+        trie_factory = MagicMock()
+        trie_factory.get = MagicMock(return_value=trie)
+
+        parser = SimpleParser(tag_commands, commands, error, trie_factory)
 
         command, size = parser.parse(b'A')
 
@@ -82,7 +114,27 @@ class TestSimpleParser(unittest.TestCase):
             ABD
         ]
 
-        parser = SimpleParser(tag_commands, commands, error, TrieFactory())
+        is_prefix_of_some_key = TestSimpleParser.t_f({
+            b'AB': True,
+            b'ABDE': False,
+            b'\r\nABC\r\n': False,
+            b'ABC\r\n': False
+        })
+
+        longest_key_prefix_of = TestSimpleParser.t_f({
+            b'AB': None,
+            b'ABDE': (b'ABD', ABD),
+            b'\r\nABC\r\n': None,
+            b'ABC\r\n': (b'ABC', ABC)
+        })
+
+        trie = MagicMock(is_prefix_of_some_key=is_prefix_of_some_key,
+                         longest_key_prefix_of=longest_key_prefix_of)
+
+        trie_factory = MagicMock()
+        trie_factory.get = MagicMock(return_value=trie)
+
+        parser = SimpleParser(tag_commands, commands, error, trie_factory)
 
         command, size = parser.parse(b'AB')
 
@@ -119,7 +171,27 @@ class TestSimpleParser(unittest.TestCase):
             ABD
         ]
 
-        parser = SimpleParser(tag_commands, commands, error, TrieFactory())
+        is_prefix_of_some_key = TestSimpleParser.t_f({
+            b'': True,
+            b'CBA': False,
+            b'\n': False,
+            b'ABE ABC ABD\r': False
+        })
+
+        longest_key_prefix_of = TestSimpleParser.t_f({
+            b'': None,
+            b'CBA': None,
+            b'\n': None,
+            b'ABE ABC ABD\r': None
+        })
+
+        trie = MagicMock(is_prefix_of_some_key=is_prefix_of_some_key,
+                         longest_key_prefix_of=longest_key_prefix_of)
+
+        trie_factory = MagicMock()
+        trie_factory.get = MagicMock(return_value=trie)
+
+        parser = SimpleParser(tag_commands, commands, error, trie_factory)
 
         command, size = parser.parse(b'')
 
