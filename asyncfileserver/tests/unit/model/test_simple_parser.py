@@ -9,6 +9,7 @@ class TestSimpleParser(unittest.TestCase):
 
         AB = object()
         A = object()
+        error = object()
 
         tag_commands = [
             b'AB',
@@ -18,9 +19,6 @@ class TestSimpleParser(unittest.TestCase):
             AB,
             A
         ]
-
-        def error(data):
-            return None
 
         parser = SimpleParser(tag_commands, commands, error, TrieFactory())
 
@@ -68,3 +66,40 @@ class TestSimpleParser(unittest.TestCase):
 
         self.assertEqual(command, (error, b'ABA'))
         self.assertEqual(size, 10)
+
+    def test_parse_one_command_prefix_of_the_other(self):
+
+        ABC = object()
+        ABD = object()
+        error = object()
+
+        tag_commands = [
+            b'ABC',
+            b'ABD',
+        ]
+        commands = [
+            ABC,
+            ABD
+        ]
+
+        parser = SimpleParser(tag_commands, commands, error, TrieFactory())
+
+        command, size = parser.parse(b'AB')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 0)
+
+        command, size = parser.parse(b'ABDE')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 4)
+
+        command, size = parser.parse(b'\r\nABC\r\n')
+
+        self.assertEqual(command, (error, b'ABDE'))
+        self.assertEqual(size, 2)
+
+        command, size = parser.parse(b'ABC\r\n')
+
+        self.assertEqual(command, (ABC, b'ABC\r'))
+        self.assertEqual(size, 5)
