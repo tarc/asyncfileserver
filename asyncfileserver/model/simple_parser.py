@@ -14,11 +14,10 @@ class SimpleParser(object):
         if self._command != None:
             return self._consume_up_to_eol(data)
 
-        commands_prefixed_by_data = self._trie.iterkeys(data)
-        if next(commands_prefixed_by_data, None) != None:
+        if self._trie.is_prefix_of_some_key(data):
             return None, 0
 
-        command_prefix_of_data = self._trie.longest_prefix_item(data, None)
+        command_prefix_of_data = self._trie.longest_key_prefix_of(data)
 
         if command_prefix_of_data == None:
             self._command = self._error, data
