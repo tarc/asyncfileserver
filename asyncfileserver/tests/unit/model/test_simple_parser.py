@@ -67,7 +67,7 @@ class TestSimpleParser(unittest.TestCase):
         self.assertEqual(command, (error, b'ABA'))
         self.assertEqual(size, 10)
 
-    def test_parse_one_command_prefix_of_the_other(self):
+    def test_parse_intersecting_commands(self):
 
         ABC = object()
         ABD = object()
@@ -103,3 +103,60 @@ class TestSimpleParser(unittest.TestCase):
 
         self.assertEqual(command, (ABC, b'ABC\r'))
         self.assertEqual(size, 5)
+
+    def test_parse_empty_string_then_non_matching_data(self):
+
+        ABC = object()
+        ABD = object()
+        error = object()
+
+        tag_commands = [
+            b'ABC',
+            b'ABD',
+        ]
+        commands = [
+            ABC,
+            ABD
+        ]
+
+        parser = SimpleParser(tag_commands, commands, error, TrieFactory())
+
+        command, size = parser.parse(b'')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 0)
+
+        command, size = parser.parse(b'CBA')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 3)
+
+        command, size = parser.parse(b'')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 0)
+
+        command, size = parser.parse(b'\n')
+
+        self.assertEqual(command, (error, b'CBA'))
+        self.assertEqual(size, 1)
+
+        command, size = parser.parse(b'')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 0)
+
+        command, size = parser.parse(b'ABE ABC ABD\r')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 12)
+
+        command, size = parser.parse(b'')
+
+        self.assertIsNone(command)
+        self.assertEqual(size, 0)
+
+        command, size = parser.parse(b'\n')
+
+        self.assertEqual(command, (error, b'ABE ABC ABD\r'))
+        self.assertEqual(size, 1)
