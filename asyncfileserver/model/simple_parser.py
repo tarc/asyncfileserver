@@ -1,11 +1,12 @@
 import re
+from asyncfileserver.infra.pytrie import TrieFactory
 
 
 class SimpleParser(object):
     _up_to_eol_pattern = re.compile(b'[^\n]*')
     _eol_pattern = re.compile(b'\n')
 
-    def __init__(self, command_tags, commands, error, trie_factory):
+    def __init__(self, command_tags, commands, error, trie_factory=TrieFactory()):
         self._trie = trie_factory.get(command_tags, commands)
         self._error = error
         self._command = None

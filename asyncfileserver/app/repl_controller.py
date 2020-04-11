@@ -1,51 +1,46 @@
 import asyncio
 
+from asyncfileserver.model.buffer import Buffer
+
 
 class Controller(object):
     def __init__(self,
-                 input, command_parser,
-                 output, response_formatter,
-                 error, exception_formatter,
-                 start_command, stop_command, quit_command, error_command):
+                 input, command_parser, command_queue,
+                 response_queue, response_formatter, output):
         self._input = input
         self._command_parser = command_parser
-        self._output = output
+        self._command_queue = command_queue
+        self._response_queue = response_queue
         self._response_formatter = response_formatter
-        self._error_output = error
-        self._exception_formatter = exception_formatter
-        self._start = start_command
-        self._stop = stop_command
-        self._quit = quit_command
-        self._error = error_command
+        self._output = output
+        self._read_buffer = Buffer()
 
-    async def control(self):
+    async def read(self):
         command_data = await self._input.input()
-        command_tag = self._command_parser.parse(command_data)
 
-        while command_tag:
-            command_task = asyncio.create_task(self._invoke(command_tag))
-            response_task = asyncio.create_task(self._respond(command_task))
+        while command_data:
+            self._read_buffer.extend(command_data)
+
+            command, size = self._command_parser.parse(self._read_buffer.get())
+
+            while size > 0:
+                if command != None:
+                    await self._command_queue.put(command)
+
+                self._read_buffer.advance(size)
+                command, size = self._command_parser.parse(
+                    self._read_buffer.get())
 
             command_data = await self._input.input()
-            command_tag = self._command_parser.parse(command_data)
 
-    async def _invoke(self, command_tag):
-        if command_tag.start():
-            return await self._start()
-        elif command_tag.stop():
-            return await self._stop()
-        elif command_tag.quit():
-            return await self._quit()
-        elif command_tag.error():
-            return await self._error()
+        await self._command_queue.put(None)
 
-    async def _respond(self, command_task):
-        data = None
-        try:
-            data = await command_task
-        except Exception as e:
-            error = self._exception_formatter.format(e)
-            await self._error_output.print(error)
+    async def write(self):
+        data = await self._response_queue.get()
+        while data != None:
+            response = self._response_formatter.format(data)
+            await self._output.print(response)
 
-        response = self._response_formatter.format(data)
-        await self._output.print(response)
+            data = await self._response_queue.get()
+
+        await self._output.print(None)
