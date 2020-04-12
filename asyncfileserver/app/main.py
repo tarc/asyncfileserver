@@ -4,7 +4,7 @@ import aiofiles
 import sys
 from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
-from contextlib import closing
+from contextlib import closing, suppress
 
 from asyncfileserver.infra.file import File
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
@@ -66,13 +66,19 @@ async def asyncfileserver(file_name: str,
             await listener.stop()
             return "Finished stopping."
 
+        command_queue = asyncio.Queue()
+        read_task = None
+
         async def quit_command(data):
+            await command_queue.put(None)
+            if read_task != None:
+                read_task.cancel()
+
             return "Quit"
 
         async def error_command(data):
             return "Error"
 
-        command_queue = asyncio.Queue()
         response_queue = asyncio.Queue()
 
         exception_formatter = ExceptionFormatter()
@@ -97,8 +103,12 @@ async def asyncfileserver(file_name: str,
             await response_queue.put(None)
 
         command_parser = SimpleParser(
-            [b'O', b'C', b'Q'],
-            [open_command, close_command, quit_command],
+            [b'O', b'o', b'C', b'c', b'Q', b'q'],
+            [
+                open_command, open_command,
+                close_command, close_command,
+                quit_command, quit_command
+            ],
             error_command)
 
         response_formatter = REPLResponseFormatter()
@@ -110,7 +120,8 @@ async def asyncfileserver(file_name: str,
         write_task = asyncio.create_task(controller.write())
 
         try:
-            await asyncio.gather(read_task, write_task, control())
+            with suppress(asyncio.CancelledError):
+                await asyncio.gather(read_task, write_task, control())
         except Exception as e:
             exception_formatted = exception_formatter.format(e)
             await error_output.print(f"TOP LEVEL EXCEPTION: {exception_formatted}")
