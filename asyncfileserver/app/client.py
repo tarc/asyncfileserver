@@ -3,7 +3,7 @@ import asyncio
 from asyncfileserver.model.buffer import Buffer
 
 
-class Controller(object):
+class Client(object):
     def __init__(self,
                  input, command_parser, command_queue,
                  response_queue, response_formatter, output):

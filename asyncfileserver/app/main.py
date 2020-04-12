@@ -11,8 +11,7 @@ from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
 from asyncfileserver.infra.asyncio_server_factory import ServerFactory
 from asyncfileserver.app.ask_answer_arbiter import AskAnswerArbiter as Arbiter
-from asyncfileserver.app.repl_controller import Controller
-from asyncfileserver.model.client import Client
+from asyncfileserver.app.client import Client
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 from asyncfileserver.model.data_view_formatter import DataViewFormatter
 from asyncfileserver.model.confirm_command_parser import ConfirmCommandParser
@@ -113,11 +112,11 @@ async def asyncfileserver(file_name: str,
 
         response_formatter = REPLResponseFormatter()
 
-        controller = Controller(console_input, command_parser, command_queue,
-                                response_queue, response_formatter, console_output)
+        client = Client(console_input, command_parser, command_queue,
+                        response_queue, response_formatter, console_output)
 
-        read_task = asyncio.create_task(controller.read())
-        write_task = asyncio.create_task(controller.write())
+        read_task = asyncio.create_task(client.read())
+        write_task = asyncio.create_task(client.write())
 
         try:
             with suppress(asyncio.CancelledError):
