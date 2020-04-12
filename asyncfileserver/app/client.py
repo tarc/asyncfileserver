@@ -16,15 +16,32 @@ class Client(object):
         self._read_buffer = Buffer()
         self._pending_read = None
 
+    async def _update_pending_read(self, coro):
+        previous_pending_read = self._pending_read
+        self._pending_read = asyncio.create_task(coro)
+        result = await self._pending_read
+        self._pending_read = previous_pending_read
+        return result
+
     async def read(self):
-        if self._pending_read != None and not self._pending_read.done():
-            await self._pending_read
+        command_data = await self._update_pending_read(self._input.input())
 
-        assert(self._pending_read == None)
+        while command_data:
+            self._read_buffer.extend(command_data)
 
-        self._pending_read = asyncio.create_task(self._read())
+            command, size = self._command_parser.parse(self._read_buffer.get())
 
-        return self._pending_read
+            while size > 0:
+                if command != None:
+                    await self._update_pending_read(self._command_queue.put(command))
+
+                self._read_buffer.advance(size)
+                command, size = self._command_parser.parse(
+                    self._read_buffer.get())
+
+            command_data = await self._update_pending_read(self._input.input())
+
+        await self._update_pending_read(self._command_queue.put(None))
 
     def cancel_pending_read(self):
         if self._pending_read != None and not self._pending_read.done():
@@ -41,24 +58,3 @@ class Client(object):
 
         self._response_queue.task_done()
 
-    async def _read(self):
-        command_data = await self._input.input()
-
-        while command_data:
-            self._read_buffer.extend(command_data)
-
-            command, size = self._command_parser.parse(self._read_buffer.get())
-
-            while size > 0:
-                if command != None:
-                    await self._command_queue.put(command)
-
-                self._read_buffer.advance(size)
-                command, size = self._command_parser.parse(
-                    self._read_buffer.get())
-
-            command_data = await self._input.input()
-
-        await self._command_queue.put(None)
-
-        self._pending_read = None
