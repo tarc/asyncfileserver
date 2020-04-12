@@ -3,5 +3,8 @@ class AsyncConsoleOutput(object):
         self._writer = writer
 
     async def print(self, data):
-        self._writer.write(data)
+        if not isinstance(data, (str, bytes, bytearray, memoryview)):
+            self._writer.write(str(data))
+        else:
+            self._writer.write(data)
         await self._writer.drain()

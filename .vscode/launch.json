@@ -8,8 +8,9 @@
             "name": "Python: Módulo",
             "type": "python",
             "request": "launch",
+            "justMyCode": false,
             "module": "asyncfileserver.app.main",
-            "args": ["-f", "../ba.fix"]
+            "args": ["-f", "../bla.fix"]
             // "args": ["--version"]
         }
      ]

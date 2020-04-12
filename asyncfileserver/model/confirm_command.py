@@ -1,18 +1,19 @@
-import re
-
-
 class ConfirmCommand(object):
-    _pattern = re.compile(b'\W')
 
-    def __init__(self, data: bytearray):
-        self._data = self._format(data)
+    def __init__(self, command: bytes, error: bool = False):
+        self._command = command.upper()
+        self._error = error
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.__dict__ == other.__dict__
+        return False
 
     def go_on(self):
-        return self._data == b"C"
+        return self._command == b"C"
 
     def yes(self):
-        return self._data == b"Y"
+        return self._command == b"Y"
 
-    def _format(self, data):
-        upper = data.upper()
-        return re.sub(self._pattern, b'', upper) 
+    def error(self):
+        return self._error

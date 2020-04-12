@@ -1,4 +1,4 @@
-class ViewData(object):
+class DataView(object):
     def __init__(self, data):
         self._data = data
     
