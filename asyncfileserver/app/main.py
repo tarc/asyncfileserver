@@ -61,30 +61,13 @@ async def asyncfileserver(file_name: str,
         command_queue = asyncio.Queue()
         read_task = None
 
-        controller = Controller(listener, command_queue, read_task)
-
         response_queue = asyncio.Queue()
 
         exception_formatter = ExceptionFormatter()
 
-        async def respond(command_task):
-            try:
-                response_data = await command_task
-                await response_queue.put(response_data)
-            except Exception as e:
-                formatted_exception = exception_formatter.format(e)
-                asyncio.create_task(error_output.print(formatted_exception))
-
-        async def control():
-            command = await command_queue.get()
-            while command != None:
-                function, argument = command
-                command_task = asyncio.create_task(function(argument))
-                response_task = asyncio.create_task(respond(command_task))
-
-                command = await command_queue.get()
-
-            await response_queue.put(None)
+        controller = Controller(listener, command_queue, read_task,
+                                response_queue, exception_formatter,
+                                error_output)
 
         command_parser = SimpleParser(
             [b'O', b'o', b'C', b'c', b'Q', b'q'],
@@ -105,7 +88,7 @@ async def asyncfileserver(file_name: str,
 
         try:
             with suppress(asyncio.CancelledError):
-                await asyncio.gather(read_task, write_task, control())
+                await asyncio.gather(read_task, write_task, controller.control())
         except Exception as e:
             exception_formatted = exception_formatter.format(e)
             await error_output.print(f"TOP LEVEL EXCEPTION: {exception_formatted}")
