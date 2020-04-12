@@ -21,6 +21,7 @@ from asyncfileserver.model.simple_parser import SimpleParser
 from asyncfileserver.model.repl_response_formatter import REPLResponseFormatter
 from asyncfileserver.model.exception_formatter import ExceptionFormatter
 from asyncfileserver.model.listener import listen
+from asyncfileserver.model.command_token import CommandToken
 
 
 async def start_client(reader, writer):
@@ -59,29 +60,26 @@ async def asyncfileserver(file_name: str,
 
     async with listen(server_factory) as listener:
         command_queue = asyncio.Queue()
-        read_task = None
-
         response_queue = asyncio.Queue()
 
         exception_formatter = ExceptionFormatter()
-
-        controller = Controller(listener, command_queue, read_task,
-                                response_queue, exception_formatter,
-                                error_output)
+        response_formatter = REPLResponseFormatter()
 
         command_parser = SimpleParser(
             [b'O', b'o', b'C', b'c', b'Q', b'q'],
             [
-                controller.open_command, controller.open_command,
-                controller.close_command, controller.close_command,
-                controller.quit_command, controller.quit_command
+                CommandToken.Open, CommandToken.Open,
+                CommandToken.Close, CommandToken.Close,
+                CommandToken.Quit, CommandToken.Quit
             ],
-            controller.error_command)
-
-        response_formatter = REPLResponseFormatter()
+            CommandToken.Error)
 
         client = Client(console_input, command_parser, command_queue,
                         response_queue, response_formatter, console_output)
+
+        controller = Controller(listener, command_queue, client,
+                                response_queue, exception_formatter,
+                                error_output)
 
         read_task = asyncio.create_task(client.read())
         write_task = asyncio.create_task(client.write())
