@@ -4,6 +4,7 @@ import aiofiles
 import sys
 from aioconsole.stream import create_standard_streams
 from exitstatus import ExitStatus
+from contextlib import closing
 
 from asyncfileserver.infra.file import File
 from asyncfileserver.infra.async_console_input import AsyncConsoleInput
@@ -19,7 +20,7 @@ from asyncfileserver.model.repl_command_parser import REPLCommandParser
 from asyncfileserver.model.simple_parser import SimpleParser
 from asyncfileserver.model.repl_response_formatter import REPLResponseFormatter
 from asyncfileserver.model.exception_formatter import ExceptionFormatter
-from asyncfileserver.model.listener import Listener
+from asyncfileserver.model.listener import listen
 
 
 async def start_client(reader, writer):
@@ -55,64 +56,65 @@ async def asyncfileserver(file_name: str,
     error_output = AsyncConsoleOutput(error)
 
     server_factory = ServerFactory(address, port, start_client)
-    listener = Listener(server_factory)
 
-    async def open_command(data):
-        await listener.listen()
-        return "Finished listening."
+    async with listen(server_factory) as listener:
+        async def open_command(data):
+            await listener.listen()
+            return "Finished starting."
 
-    async def close_command(data):
-        await listener.stop()
-        return "Finished stopping."
+        async def close_command(data):
+            await listener.stop()
+            return "Finished stopping."
 
-    async def quit_command(data):
-        return "Quit"
+        async def quit_command(data):
+            return "Quit"
 
-    async def error_command(data):
-        return "Error"
+        async def error_command(data):
+            return "Error"
 
-    command_queue = asyncio.Queue()
-    response_queue = asyncio.Queue()
+        command_queue = asyncio.Queue()
+        response_queue = asyncio.Queue()
 
-    exception_formatter = ExceptionFormatter()
+        exception_formatter = ExceptionFormatter()
 
-    async def respond(command_task):
-        try:
-            response_data = await command_task
-            await response_queue.put(response_data)
-        except Exception as e:
-            formatted_exception = exception_formatter.format(e)
-            asyncio.create_task(error_output.print(formatted_exception))
+        async def respond(command_task):
+            try:
+                response_data = await command_task
+                await response_queue.put(response_data)
+            except Exception as e:
+                formatted_exception = exception_formatter.format(e)
+                asyncio.create_task(error_output.print(formatted_exception))
 
-    async def control():
-        command = await command_queue.get()
-        while command != None:
-            function, argument = command
-            command_task = asyncio.create_task(function(argument))
-            response_task = asyncio.create_task(respond(command_task))
-
+        async def control():
             command = await command_queue.get()
+            while command != None:
+                function, argument = command
+                command_task = asyncio.create_task(function(argument))
+                response_task = asyncio.create_task(respond(command_task))
 
-        await response_queue.put(None)
+                command = await command_queue.get()
 
-    command_parser = SimpleParser(
-        [b'O', b'C', b'Q'], [open_command, close_command, quit_command],
-        error_command)
+            await response_queue.put(None)
 
-    response_formatter = REPLResponseFormatter()
+        command_parser = SimpleParser(
+            [b'O', b'C', b'Q'],
+            [open_command, close_command, quit_command],
+            error_command)
 
-    controller = Controller(console_input, command_parser, command_queue,
-                            response_queue, response_formatter, console_output)
+        response_formatter = REPLResponseFormatter()
 
-    read_task = asyncio.create_task(controller.read())
-    write_task = asyncio.create_task(controller.write())
+        controller = Controller(console_input, command_parser, command_queue,
+                                response_queue, response_formatter, console_output)
 
-    try:
-        await asyncio.gather(read_task, write_task, control())
-    except Exception as e:
-        exception_formatted = exception_formatter.format(e)
-        await error_output.print(f"TOP LEVEL EXCEPTION: {exception_formatted}")
-        return ExitStatus.failure
+        read_task = asyncio.create_task(controller.read())
+        write_task = asyncio.create_task(controller.write())
+
+        try:
+            await asyncio.gather(read_task, write_task, control())
+        except Exception as e:
+            exception_formatted = exception_formatter.format(e)
+            await error_output.print(f"TOP LEVEL EXCEPTION: {exception_formatted}")
+            return ExitStatus.failure
 
     return ExitStatus.success
 
