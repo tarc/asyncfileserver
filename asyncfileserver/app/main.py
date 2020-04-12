@@ -58,20 +58,10 @@ async def asyncfileserver(file_name: str,
     server_factory = ServerFactory(address, port, start_client)
 
     async with listen(server_factory) as listener:
-        controller = Controller(listener)
-
         command_queue = asyncio.Queue()
         read_task = None
 
-        async def quit_command(data):
-            await command_queue.put(None)
-            if read_task != None:
-                read_task.cancel()
-
-            return "Quit"
-
-        async def error_command(data):
-            return "Error"
+        controller = Controller(listener, command_queue, read_task)
 
         response_queue = asyncio.Queue()
 
@@ -101,9 +91,9 @@ async def asyncfileserver(file_name: str,
             [
                 controller.open_command, controller.open_command,
                 controller.close_command, controller.close_command,
-                quit_command, quit_command
+                controller.quit_command, controller.quit_command
             ],
-            error_command)
+            controller.error_command)
 
         response_formatter = REPLResponseFormatter()
 
