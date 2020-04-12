@@ -9,4 +9,4 @@ class Listener(object):
 
     async def stop(self):
         self._server.close()
-        await self._server.wait_close()
+        await self._server.wait_closed()

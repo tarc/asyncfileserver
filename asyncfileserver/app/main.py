@@ -74,12 +74,22 @@ async def asyncfileserver(file_name: str,
     command_queue = asyncio.Queue()
     response_queue = asyncio.Queue()
 
+    exception_formatter = ExceptionFormatter()
+
+    async def respond(command_task):
+        try:
+            response_data = await command_task
+            await response_queue.put(response_data)
+        except Exception as e:
+            formatted_exception = exception_formatter.format(e)
+            asyncio.create_task(error_output.print(formatted_exception))
+
     async def control():
         command = await command_queue.get()
         while command != None:
             function, argument = command
-            response_data = await function(argument)
-            await response_queue.put(response_data)
+            command_task = asyncio.create_task(function(argument))
+            response_task = asyncio.create_task(respond(command_task))
 
             command = await command_queue.get()
 
@@ -89,9 +99,10 @@ async def asyncfileserver(file_name: str,
         [b'O', b'C', b'Q'], [open_command, close_command, quit_command],
         error_command)
 
-    exception_formatter = ExceptionFormatter()
+    response_formatter = REPLResponseFormatter()
+
     controller = Controller(console_input, command_parser, command_queue,
-                            response_queue, REPLResponseFormatter(), console_output)
+                            response_queue, response_formatter, console_output)
 
     read_task = asyncio.create_task(controller.read())
     write_task = asyncio.create_task(controller.write())

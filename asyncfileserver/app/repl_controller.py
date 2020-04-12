@@ -42,5 +42,3 @@ class Controller(object):
             await self._output.print(response)
 
             data = await self._response_queue.get()
-
-        await self._output.print(None)

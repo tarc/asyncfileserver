@@ -3,4 +3,4 @@ class REPLResponse(object):
         self._response = response
 
     def __str__(self):
-        return "RESPONSE\n" if self._response else "NONE\n"
+        return f'RESPONSE: "{self._response}"\n'
