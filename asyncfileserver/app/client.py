@@ -40,5 +40,8 @@ class Client(object):
         while data != None:
             response = self._response_formatter.format(data)
             await self._output.print(response)
+            self._response_queue.task_done()
 
             data = await self._response_queue.get()
+
+        self._response_queue.task_done()

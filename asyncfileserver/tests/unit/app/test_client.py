@@ -3,10 +3,10 @@ import aiounittest
 import aioconsole
 import os
 
-from asyncfileserver.model.client import Client
+from asyncfileserver.app.client import Client
 from ..infra.buffer_output import BufferOutput
 from ..infra.queue_input import QueueInput
-from .fake_async_queue import FakeAsyncQueue
+from ..model.fake_async_queue import FakeAsyncQueue
 
 
 class NullInput(object):
@@ -17,10 +17,6 @@ class NullInput(object):
 class NullOutput(object):
     async def print(self):
         return None
-
-
-class NullParser(object):
-    pass
 
 
 class IdentityFormatter(object):
@@ -60,7 +56,7 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
         output_elements = []
         output = BufferOutput(output_elements)
 
-        client = Client(NullInput(), NullParser(), NullQueue(),
+        client = Client(NullInput(), IdentityParser(), NullQueue(),
                         queue, IdentityFormatter(), output)
 
         await asyncio.gather(client.write(), client.read())
@@ -74,7 +70,7 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
         output_elements = []
         output = BufferOutput(output_elements)
 
-        client = Client(NullInput(), NullParser(), NullQueue(),
+        client = Client(NullInput(), IdentityParser(), NullQueue(),
                         queue, IdentityFormatter(), output)
 
         await asyncio.gather(client.write(), client.read())
@@ -89,7 +85,7 @@ class TestConsoleClient(aiounittest.AsyncTestCase):
         output_elements = []
         output = BufferOutput(output_elements)
 
-        client = Client(NullInput(), NullParser(), NullQueue(),
+        client = Client(NullInput(), IdentityParser(), NullQueue(),
                         response_queue, IdentityFormatter(), output)
 
         await asyncio.gather(client.write(), client.read())
