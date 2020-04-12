@@ -11,6 +11,7 @@ from asyncfileserver.infra.async_console_input import AsyncConsoleInput
 from asyncfileserver.infra.async_console_output import AsyncConsoleOutput
 from asyncfileserver.infra.asyncio_server_factory import ServerFactory
 from asyncfileserver.app.ask_answer_arbiter import AskAnswerArbiter as Arbiter
+from asyncfileserver.app.controller import Controller
 from asyncfileserver.app.client import Client
 from asyncfileserver.model.confirm_put_queue import ConfirmPutQueue
 from asyncfileserver.model.data_view_formatter import DataViewFormatter
@@ -57,13 +58,7 @@ async def asyncfileserver(file_name: str,
     server_factory = ServerFactory(address, port, start_client)
 
     async with listen(server_factory) as listener:
-        async def open_command(data):
-            await listener.listen()
-            return "Finished starting."
-
-        async def close_command(data):
-            await listener.stop()
-            return "Finished stopping."
+        controller = Controller(listener)
 
         command_queue = asyncio.Queue()
         read_task = None
@@ -104,8 +99,8 @@ async def asyncfileserver(file_name: str,
         command_parser = SimpleParser(
             [b'O', b'o', b'C', b'c', b'Q', b'q'],
             [
-                open_command, open_command,
-                close_command, close_command,
+                controller.open_command, controller.open_command,
+                controller.close_command, controller.close_command,
                 quit_command, quit_command
             ],
             error_command)
